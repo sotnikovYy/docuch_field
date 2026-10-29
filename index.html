@@ -1,53 +1,577 @@
 <!DOCTYPE html>
+
 <html lang="uk">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Агрохімічне обстеження ґрунтів</title>
-<style>
-body{font:15px Arial,sans-serif;margin:20px;background:#f4f6f3;color:#222}h1{color:#2e5e2e}.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button,button{padding:8px 14px;border:1px solid #b9c9b9;border-radius:4px;background:#e3ebe3;cursor:pointer}.tabs button.active,.primary{background:#2e5e2e;color:white}.panel{display:none;margin-top:16px}.panel.active{display:block}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:800px;background:#fff;font-size:14px}caption{text-align:left;font-weight:bold;margin-bottom:8px}th,td{border:1px solid #b9c9b9;padding:7px;text-align:left}th{background:#dfeadf}tr:nth-child(even){background:#f6faf6}.actions{white-space:nowrap}form{margin-top:16px;padding:12px;background:white;border:1px solid #b9c9b9;border-radius:5px}label{display:inline-flex;flex-direction:column;gap:4px;margin:5px 10px 5px 0}input,select{padding:7px;border:1px solid #999;border-radius:3px;min-width:150px}.error{color:#b3261e;display:block;margin:8px 0}.status{color:#2e5e2e}.hint{color:#555;font-size:13px}.row-used{color:#8a4b00}td[data-c]{cursor:text}td input,td select{min-width:0;width:100%;box-sizing:border-box;padding:4px}
-</style></head><body>
-<h1>Агрохімічне обстеження ґрунтів</h1><p>Державний біотехнологічний університет, Харків</p>
-<div class="tabs" id="tabs"></div><div id="panels"></div>
+
+<style>body {
+  font: 15px Arial, sans-serif;
+  margin: 20px;
+  background: #f4f6f3;
+  color: #222
+}
+
+h1 {
+  color: #2e5e2e
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap
+}
+
+.tabs button,
+button {
+  padding: 8px 14px;
+  border: 1px solid #b9c9b9;
+  border-radius: 4px;
+  background: #e3ebe3;
+  cursor: pointer
+}
+
+.tabs button.active,
+.primary {
+  background: #2e5e2e;
+  color: white
+}
+
+.panel {
+  display: none;
+  margin-top: 16px
+}
+
+.panel.active {
+  display: block
+}
+
+.table-wrap {
+  overflow: auto
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px;
+  background: #fff;
+  font-size: 14px
+}
+
+caption {
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 8px
+}
+
+th,
+td {
+  border: 1px solid #b9c9b9;
+  padding: 7px;
+  text-align: left
+}
+
+th {
+  background: #dfeadf
+}
+
+tr:nth-child(even) {
+  background: #f6faf6
+}
+
+.actions {
+  white-space: nowrap
+}
+
+form {
+  margin-top: 16px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #b9c9b9;
+  border-radius: 5px
+}
+
+label {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 5px 10px 5px 0
+}
+
+input,
+select {
+  padding: 7px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  min-width: 150px
+}
+
+.error {
+  color: #b3261e;
+  display: block;
+  margin: 8px 0
+}
+
+.status {
+  color: #2e5e2e
+}
+
+.hint {
+  color: #555;
+  font-size: 13px
+}
+
+.row-used {
+  color: #8a4b00
+}
+
+td[data-c] {
+  cursor: text
+}
+
+td input,
+td select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px
+}
+</style>
+</head>
+<body>
+
+<h1>Агрохімічне обстеження ґрунтів</h1>
+<p>Державний біотехнологічний університет, Харків</p>
+
+<div class="tabs" id="tabs"></div>
+<div id="panels"></div>
+
 <script>
-// Лабораторна 1: предметна область, три сутності, їхні характеристики та вкладки.
-const entities=[
-{id:'fields',title:'Поле',caption:'Таблиця 1. Поля дослідного господарства «Докучаєвське»',key:'code',columns:[{key:'code',label:'Код поля'},{key:'name',label:'Назва'},{key:'area',label:'Площа, га',number:true},{key:'soil',label:'Тип ґрунту'},{key:'crop',label:'Культура'},{key:'predecessor',label:'Попередник'},{key:'tillage',label:'Система обробітку'},{key:'responsible',label:'Відповідальний',from:'researchers'}],rows:[
-{code:'П-01',name:'1',area:'42,5',soil:'Чорнозем звичайний',crop:'Пшениця озима',predecessor:'Соняшник',tillage:'No-till',responsible:'Гавва Дмитро Вікторович'},
-{code:'П-02',name:'Переліг',area:'18,3',soil:'Чорнозем звичайний',crop:'—',predecessor:'—',tillage:'Мінімальна',responsible:'Рєзнік Сергій Вадимович'},
-{code:'П-03',name:'3',area:'27,8',soil:'Чорнозем звичайний',crop:'Соя',predecessor:'Кукурудза',tillage:'Класична (оранка)',responsible:'Сотников Юрій Олексійович'},
-{code:'П-04',name:'4',area:'35,1',soil:'Чорнозем звичайний',crop:'Ячмінь ярий',predecessor:'Соя',tillage:'Мінімальна',responsible:'Гавва Дмитро Вікторович'},
-{code:'П-05',name:'Штани',area:'51,0',soil:'Чорнозем звичайний',crop:'Соняшник',predecessor:'Ячмінь ярий',tillage:'No-till',responsible:'Рєзнік Сергій Вадимович'}]},
-{id:'samples',title:'Зразок ґрунту',caption:'Таблиця 2. Результати аналізу зразків ґрунту',key:'id',columns:[{key:'id',label:'№ зразка'},{key:'fieldCode',label:'Код поля',from:'fields'},{key:'date',label:'Дата відбору'},{key:'depth',label:'Глибина, см'},{key:'humus',label:'Гумус, %',number:true},{key:'ph',label:'pH (KCl)',number:true},{key:'p2o5',label:'P₂O₅, мг/кг',number:true},{key:'k2o',label:'K₂O, мг/кг',number:true},{key:'collector',label:'Відібрав',from:'researchers'}],rows:[
-{id:'З-001',fieldCode:'П-01',date:'12.04.2026',depth:'0–20',humus:'4,6',ph:'6,3',p2o5:'118',k2o:'142',collector:'Гавва Дмитро Вікторович'},
-{id:'З-002',fieldCode:'П-01',date:'12.04.2026',depth:'20–40',humus:'3,8',ph:'6,5',p2o5:'74',k2o:'110',collector:'Рєзнік Сергій Вадимович'},
-{id:'З-003',fieldCode:'П-02',date:'14.04.2026',depth:'0–20',humus:'4,1',ph:'5,9',p2o5:'96',k2o:'128',collector:'Сотников Юрій Олексійович'},
-{id:'З-004',fieldCode:'П-03',date:'15.04.2026',depth:'0–20',humus:'5,2',ph:'6,8',p2o5:'132',k2o:'165',collector:'Гавва Дмитро Вікторович'},
-{id:'З-005',fieldCode:'П-04',date:'18.04.2026',depth:'0–20',humus:'3,4',ph:'6,1',p2o5:'81',k2o:'102',collector:'Рєзнік Сергій Вадимович'},
-{id:'З-006',fieldCode:'П-05',date:'20.04.2026',depth:'0–20',humus:'4,8',ph:'6,4',p2o5:'125',k2o:'150',collector:'Сотников Юрій Олексійович'}]},
-{id:'researchers',title:'Виконавець',caption:'Таблиця 3. Виконавці, залучені до обстеження',key:'name',columns:[{key:'name',label:'ПІБ'},{key:'position',label:'Посада'},{key:'degree',label:'Науковий ступінь'},{key:'department',label:'Підрозділ'},{key:'specialization',label:'Спеціалізація'},{key:'experience',label:'Стаж, років',number:true}],rows:[
-{name:'Гавва Дмитро Вікторович',position:'Доцент',degree:'Кандидат с.-г. наук',department:'Кафедра ґрунтознавства',specialization:'Агрохімія',experience:'18'},
-{name:'Рєзнік Сергій Вадимович',position:'Доцент',degree:'Кандидат с.-г. наук',department:'Кафедра ґрунтознавства',specialization:'Мікробіологія ґрунту',experience:'12'},
-{name:'Сотников Юрій Олексійович',position:'Доцент',degree:'к. ек. н.',department:'Кафедра інформ. техн.',specialization:'Аналіз даних',experience:'33'}]}];
-const STORAGE_KEY='agro-survey-data-v2';let activeIndex=0;
-const $=(s,root=document)=>root.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function getEntity(id){return entities.find(e=>e.id===id)}
-function saveData(){const data={};entities.forEach(e=>data[e.id]=e.rows);try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){alert('Не вдалося зберегти дані в браузері.')}}
-function loadData(){try{const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(data)entities.forEach(e=>{if(Array.isArray(data[e.id]))e.rows=data[e.id]})}catch(e){localStorage.removeItem(STORAGE_KEY)}}
-function checkValue(entity,col,value,currentRow){if(!value)return `Поле «${col.label}» не заповнене`;if(col.number&&(value.trim()===''||!Number.isFinite(Number(value.replace(',','.')))))return `Поле «${col.label}» має бути числом`;if(col.key===entity.key&&entity.rows.some(r=>r!==currentRow&&r[col.key]===value))return `Запис зі значенням «${value}» вже існує`;if(col.from){const src=getEntity(col.from);if(!src.rows.some(r=>r[src.key]===value))return `Оберіть значення зі списку «${src.title}»`}return ''}
-function references(entity,row){return entities.flatMap(other=>other.columns.filter(c=>c.from===entity.id).flatMap(c=>other.rows.filter(r=>r[c.key]===row[entity.key]).map(r=>`${other.title}: ${r[other.key]}`)))}
-function switchTab(i){activeIndex=i;document.querySelectorAll('.tabs button').forEach((b,n)=>b.classList.toggle('active',n===i));document.querySelectorAll('.panel').forEach((p,n)=>p.classList.toggle('active',n===i))}
-function fieldControl(entity,col,value=''){if(col.from){const src=getEntity(col.from);return `<select name="${esc(col.key)}" required><option value="">— оберіть —</option>${src.rows.map(r=>`<option value="${esc(r[src.key])}" ${r[src.key]===value?'selected':''}>${esc(r[src.key])}</option>`).join('')}</select>`}return `<input name="${esc(col.key)}" value="${esc(value)}" ${col.number?'inputmode="decimal"':''} required>`}
-// Лабораторна 2: форми додавання з полями-списками для зовнішніх зв'язків.
-function renderPanel(entity){const panel=document.createElement('section');panel.className='panel';const headers=entity.columns.map(c=>`<th>${esc(c.label)}</th>`).join('');const rows=entity.rows.map((row,i)=>`<tr>${entity.columns.map(c=>`<td data-c="${esc(c.key)}" title="Клік — змінити">${esc(row[c.key])}</td>`).join('')}<td class="actions"><button type="button" data-delete="${i}">Видалити</button></td></tr>`).join('');panel.innerHTML=`<div class="table-wrap"><table><caption>${esc(entity.caption)}</caption><thead><tr>${headers}<th>Дії</th></tr></thead><tbody>${rows}</tbody></table></div><form data-add><b>Додати: ${esc(entity.title)}</b><br>${entity.columns.map(c=>`<label>${esc(c.label)}${fieldControl(entity,c)}</label>`).join('')}<br><button class="primary">Додати запис</button><span class="error" aria-live="polite"></span></form>`;
-const add=$('[data-add]',panel);add.onsubmit=ev=>{ev.preventDefault();const row={};for(const c of entity.columns){const v=add.elements[c.key].value.trim(),err=checkValue(entity,c,v,null);if(err){$('.error',add).textContent=err;return}row[c.key]=v}entity.rows.push(row);saveData();renderAll()};
-panel.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const row=entity.rows[+b.dataset.delete],uses=references(entity,row);if(uses.length){alert(`Видалення неможливе: запис використовується в іншій таблиці.\n${uses.join('\n')}`);return}if(confirm(`Видалити запис «${row[entity.key]}»?`)){entity.rows.splice(+b.dataset.delete,1);saveData();renderAll()}});
-// Лабораторна 3: редагування по кліку на комірці; Enter, клік поза коміркою або вибір зі списку зберігає, Esc скасовує.
-panel.querySelectorAll('tbody tr').forEach((tr,ix)=>tr.querySelectorAll('td[data-c]').forEach(td=>td.onclick=()=>editCell(entity,ix,td)));
-return panel}
-function editCell(entity,ix,td){if(td.firstElementChild)return;const row=entity.rows[ix],col=entity.columns.find(c=>c.key===td.dataset.c),old=row[col.key];td.innerHTML=fieldControl(entity,col,old);const ctl=td.firstElementChild;ctl.removeAttribute('required');ctl.focus();if(ctl.tagName==='INPUT')ctl.select();let done=false;
-const finish=save=>{if(done)return;done=true;if(!save){td.textContent=old;return}const v=ctl.value.trim();if(v===old){td.textContent=old;return}let err=checkValue(entity,col,v,row);if(!err&&col.key===entity.key&&references(entity,row).length)err='Ключове значення використовується в інших таблицях і не може бути змінене';if(err){alert(err);td.textContent=old;return}row[col.key]=v;saveData();renderAll()};
-ctl.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();finish(true)}else if(e.key==='Escape')finish(false)};ctl.onblur=()=>finish(true);if(ctl.tagName==='SELECT')ctl.onchange=()=>finish(true)}
-function renderAll(){const tabs=$('#tabs'),panels=$('#panels');tabs.innerHTML='';panels.innerHTML='';entities.forEach((e,i)=>{const b=document.createElement('button');b.textContent=e.title;b.onclick=()=>switchTab(i);tabs.appendChild(b);panels.appendChild(renderPanel(e))});switchTab(Math.min(activeIndex,entities.length-1))}
-// Лабораторна 4: localStorage з відновленням даних і синхронізацією відкритих вкладок.
-window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY){loadData();renderAll()}});loadData();renderAll();
-</script></body></html>
+// Пояснення для п. Євгена.
+// Робота охоплює завдання № 1–4.
+// Використано звичайні HTML, CSS і JavaScript без сторонніх бібліотек та фреймворків.
+
+// Лабораторна № 1: предметна область, три сутності, їхні поля та початкові дані.
+const entities = [{
+  id: 'fields',
+  title: 'Поле',
+  caption: 'Таблиця 1. Поля дослідного господарства «Докучаєвське»',
+  key: 'code',
+  columns: [{
+    key: 'code',
+    label: 'Код поля'
+  }, {
+    key: 'name',
+    label: 'Назва'
+  }, {
+    key: 'area',
+    label: 'Площа, га',
+    number: true
+  }, {
+    key: 'soil',
+    label: 'Тип ґрунту'
+  }, {
+    key: 'crop',
+    label: 'Культура'
+  }, {
+    key: 'predecessor',
+    label: 'Попередник'
+  }, {
+    key: 'tillage',
+    label: 'Система обробітку'
+  }, {
+    key: 'responsible',
+    label: 'Відповідальний',
+    from: 'researchers'
+  }],
+  rows: [{
+    code: 'П-01',
+    name: '1',
+    area: '42,5',
+    soil: 'Чорнозем звичайний',
+    crop: 'Пшениця озима',
+    predecessor: 'Соняшник',
+    tillage: 'No-till',
+    responsible: 'Гавва Дмитро Вікторович'
+  }, {
+    code: 'П-02',
+    name: 'Переліг',
+    area: '18,3',
+    soil: 'Чорнозем звичайний',
+    crop: '—',
+    predecessor: '—',
+    tillage: 'Мінімальна',
+    responsible: 'Рєзнік Сергій Вадимович'
+  }, {
+    code: 'П-03',
+    name: '3',
+    area: '27,8',
+    soil: 'Чорнозем звичайний',
+    crop: 'Соя',
+    predecessor: 'Кукурудза',
+    tillage: 'Класична (оранка)',
+    responsible: 'Сотников Юрій Олексійович'
+  }, {
+    code: 'П-04',
+    name: '4',
+    area: '35,1',
+    soil: 'Чорнозем звичайний',
+    crop: 'Ячмінь ярий',
+    predecessor: 'Соя',
+    tillage: 'Мінімальна',
+    responsible: 'Гавва Дмитро Вікторович'
+  }, {
+    code: 'П-05',
+    name: 'Штани',
+    area: '51,0',
+    soil: 'Чорнозем звичайний',
+    crop: 'Соняшник',
+    predecessor: 'Ячмінь ярий',
+    tillage: 'No-till',
+    responsible: 'Рєзнік Сергій Вадимович'
+  }]
+}, {
+  id: 'samples',
+  title: 'Зразок ґрунту',
+  caption: 'Таблиця 2. Результати аналізу зразків ґрунту',
+  key: 'id',
+  columns: [{
+    key: 'id',
+    label: '№ зразка'
+  }, {
+    key: 'fieldCode',
+    label: 'Код поля',
+    from: 'fields'
+  }, {
+    key: 'date',
+    label: 'Дата відбору'
+  }, {
+    key: 'depth',
+    label: 'Глибина, см'
+  }, {
+    key: 'humus',
+    label: 'Гумус, %',
+    number: true
+  }, {
+    key: 'ph',
+    label: 'pH (KCl)',
+    number: true
+  }, {
+    key: 'p2o5',
+    label: 'P₂O₅, мг/кг',
+    number: true
+  }, {
+    key: 'k2o',
+    label: 'K₂O, мг/кг',
+    number: true
+  }, {
+    key: 'collector',
+    label: 'Відібрав',
+    from: 'researchers'
+  }],
+  rows: [{
+    id: 'З-001',
+    fieldCode: 'П-01',
+    date: '12.04.2026',
+    depth: '0–20',
+    humus: '4,6',
+    ph: '6,3',
+    p2o5: '118',
+    k2o: '142',
+    collector: 'Гавва Дмитро Вікторович'
+  }, {
+    id: 'З-002',
+    fieldCode: 'П-01',
+    date: '12.04.2026',
+    depth: '20–40',
+    humus: '3,8',
+    ph: '6,5',
+    p2o5: '74',
+    k2o: '110',
+    collector: 'Рєзнік Сергій Вадимович'
+  }, {
+    id: 'З-003',
+    fieldCode: 'П-02',
+    date: '14.04.2026',
+    depth: '0–20',
+    humus: '4,1',
+    ph: '5,9',
+    p2o5: '96',
+    k2o: '128',
+    collector: 'Сотников Юрій Олексійович'
+  }, {
+    id: 'З-004',
+    fieldCode: 'П-03',
+    date: '15.04.2026',
+    depth: '0–20',
+    humus: '5,2',
+    ph: '6,8',
+    p2o5: '132',
+    k2o: '165',
+    collector: 'Гавва Дмитро Вікторович'
+  }, {
+    id: 'З-005',
+    fieldCode: 'П-04',
+    date: '18.04.2026',
+    depth: '0–20',
+    humus: '3,4',
+    ph: '6,1',
+    p2o5: '81',
+    k2o: '102',
+    collector: 'Рєзнік Сергій Вадимович'
+  }, {
+    id: 'З-006',
+    fieldCode: 'П-05',
+    date: '20.04.2026',
+    depth: '0–20',
+    humus: '4,8',
+    ph: '6,4',
+    p2o5: '125',
+    k2o: '150',
+    collector: 'Сотников Юрій Олексійович'
+  }]
+}, {
+  id: 'researchers',
+  title: 'Виконавець',
+  caption: 'Таблиця 3. Виконавці, залучені до обстеження',
+  key: 'name',
+  columns: [{
+    key: 'name',
+    label: 'ПІБ'
+  }, {
+    key: 'position',
+    label: 'Посада'
+  }, {
+    key: 'degree',
+    label: 'Науковий ступінь'
+  }, {
+    key: 'department',
+    label: 'Підрозділ'
+  }, {
+    key: 'specialization',
+    label: 'Спеціалізація'
+  }, {
+    key: 'experience',
+    label: 'Стаж, років',
+    number: true
+  }],
+  rows: [{
+    name: 'Гавва Дмитро Вікторович',
+    position: 'Доцент',
+    degree: 'Кандидат с.-г. наук',
+    department: 'Кафедра ґрунтознавства',
+    specialization: 'Агрохімія',
+    experience: '18'
+  }, {
+    name: 'Рєзнік Сергій Вадимович',
+    position: 'Доцент',
+    degree: 'Кандидат с.-г. наук',
+    department: 'Кафедра ґрунтознавства',
+    specialization: 'Мікробіологія ґрунту',
+    experience: '12'
+  }, {
+    name: 'Сотников Юрій Олексійович',
+    position: 'Доцент',
+    degree: 'к. ек. н.',
+    department: 'Кафедра інформ. техн.',
+    specialization: 'Аналіз даних',
+    experience: '33'
+  }]
+}];
+const STORAGE_KEY = 'agro-survey-data-v2';
+let activeIndex = 0;
+const $ = (s, root = document) => root.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+} [c]));
+
+function getEntity(id) {
+  return entities.find(e => e.id === id)
+}
+
+function saveData() {
+  const data = {};
+  entities.forEach(e => data[e.id] = e.rows);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    alert('Не вдалося зберегти дані в браузері.')
+  }
+}
+
+function loadData() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (data) entities.forEach(e => {
+      if (Array.isArray(data[e.id])) e.rows = data[e.id]
+    })
+  } catch (e) {
+    localStorage.removeItem(STORAGE_KEY)
+  }
+}
+
+function checkValue(entity, col, value, currentRow) {
+  if (!value) return `Поле «${col.label}» не заповнене`;
+  if (col.number && (value.trim() === '' || !Number.isFinite(Number(value.replace(',', '.')))))
+    return `Поле «${col.label}» має бути числом`;
+  if (col.key === entity.key && entity.rows.some(r => r !== currentRow && r[col.key] === value))
+    return `Запис зі значенням «${value}» вже існує`;
+  if (col.from) {
+    const src = getEntity(col.from);
+    if (!src.rows.some(r => r[src.key] === value))
+    return `Оберіть значення зі списку «${src.title}»`
+  }
+  return ''
+}
+
+function references(entity, row) {
+  return entities.flatMap(other => other.columns.filter(c => c.from === entity.id).flatMap(c =>
+    other.rows.filter(r => r[c.key] === row[entity.key]).map(r =>
+      `${other.title}: ${r[other.key]}`)))
+}
+
+function switchTab(i) {
+  activeIndex = i;
+  document.querySelectorAll('.tabs button').forEach((b, n) => b.classList.toggle('active', n ===
+  i));
+  document.querySelectorAll('.panel').forEach((p, n) => p.classList.toggle('active', n === i))
+}
+
+function fieldControl(entity, col, value = '') {
+  if (col.from) {
+    const src = getEntity(col.from);
+    return `<select name="${esc(col.key)}" required><option value="">— оберіть —</option>${src.rows.map(r=>`<option value="${esc(r[src.key])}" ${r[src.key]===value?'selected':''}>${esc(r[src.key])}</option>`).join('')}</select>`
+  }
+  return `<input name="${esc(col.key)}" value="${esc(value)}" ${col.number?'inputmode="decimal"':''} required>`
+}
+// Лабораторна № 2: формування таблиць і форм додавання записів.
+// Для пов’язаних полів створюються списки зі значень іншої сутності.
+function renderPanel(entity) {
+  const panel = document.createElement('section');
+  panel.className = 'panel';
+  const headers = entity.columns.map(c => `<th>${esc(c.label)}</th>`).join('');
+  const rows = entity.rows.map((row, i) =>
+    `<tr>${entity.columns.map(c=>`<td data-c="${esc(c.key)}" title="Клік — змінити">${esc(row[c.key])}</td>`).join('')}<td class="actions"><button type="button" data-delete="${i}">Видалити</button></td></tr>`
+    ).join('');
+  panel.innerHTML =
+    `<div class="table-wrap"><table><caption>${esc(entity.caption)}</caption><thead><tr>${headers}<th>Дії</th></tr></thead><tbody>${rows}</tbody></table></div><form data-add><b>Додати: ${esc(entity.title)}</b><br>${entity.columns.map(c=>`<label>${esc(c.label)}${fieldControl(entity,c)}</label>`).join('')}<br><button class="primary">Додати запис</button><span class="error" aria-live="polite"></span></form>`;
+  const add = $('[data-add]', panel);
+  add.onsubmit = ev => {
+    ev.preventDefault();
+    const row = {};
+    for (const c of entity.columns) {
+      const v = add.elements[c.key].value.trim(),
+        err = checkValue(entity, c, v, null);
+      if (err) {
+        $('.error', add).textContent = err;
+        return
+      }
+      row[c.key] = v
+    }
+    entity.rows.push(row);
+    saveData();
+    renderAll()
+  };
+  panel.querySelectorAll('[data-delete]').forEach(b => b.onclick = () => {
+    const row = entity.rows[+b.dataset.delete],
+      uses = references(entity, row);
+    if (uses.length) {
+      alert(`Видалення неможливе: запис використовується в іншій таблиці.\n${uses.join('\n')}`);
+      return
+    }
+    if (confirm(`Видалити запис «${row[entity.key]}»?`)) {
+      entity.rows.splice(+b.dataset.delete, 1);
+      saveData();
+      renderAll()
+    }
+  });
+  // Лабораторна № 3: редагування запускається кліком по комірці.
+  // Enter або втрата фокуса зберігає зміну; Esc скасовує її.
+  // Перед видаленням перевіряються зв’язки з іншими таблицями;
+  // якщо запис використовується, користувач отримує повідомлення.
+  panel.querySelectorAll('tbody tr').forEach((tr, ix) => tr.querySelectorAll('td[data-c]').forEach(
+    td => td.onclick = () => editCell(entity, ix, td)));
+  return panel
+}
+
+function editCell(entity, ix, td) {
+  if (td.firstElementChild) return;
+  const row = entity.rows[ix],
+    col = entity.columns.find(c => c.key === td.dataset.c),
+    old = row[col.key];
+  td.innerHTML = fieldControl(entity, col, old);
+  const ctl = td.firstElementChild;
+  ctl.removeAttribute('required');
+  ctl.focus();
+  if (ctl.tagName === 'INPUT') ctl.select();
+  let done = false;
+  const finish = save => {
+    if (done) return;
+    done = true;
+    if (!save) {
+      td.textContent = old;
+      return
+    }
+    const v = ctl.value.trim();
+    if (v === old) {
+      td.textContent = old;
+      return
+    }
+    let err = checkValue(entity, col, v, row);
+    if (!err && col.key === entity.key && references(entity, row).length) err =
+      'Ключове значення використовується в інших таблицях і не може бути змінене';
+    if (err) {
+      alert(err);
+      td.textContent = old;
+      return
+    }
+    row[col.key] = v;
+    saveData();
+    renderAll()
+  };
+  ctl.onkeydown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      finish(true)
+    } else if (e.key === 'Escape') finish(false)
+  };
+  ctl.onblur = () => finish(true);
+  if (ctl.tagName === 'SELECT') ctl.onchange = () => finish(true)
+}
+
+function renderAll() {
+  const tabs = $('#tabs'),
+    panels = $('#panels');
+  tabs.innerHTML = '';
+  panels.innerHTML = '';
+  entities.forEach((e, i) => {
+    const b = document.createElement('button');
+    b.textContent = e.title;
+    b.onclick = () => switchTab(i);
+    tabs.appendChild(b);
+    panels.appendChild(renderPanel(e))
+  });
+  switchTab(Math.min(activeIndex, entities.length - 1))
+}
+// Лабораторна № 4: localStorage зберігає дані після повторного відкриття сторінки.
+// Подія storage завантажує зміни в інших відкритих вкладках того самого сайту.
+window.addEventListener('storage', e => {
+  if (e.key === STORAGE_KEY) {
+    loadData();
+    renderAll()
+  }
+});
+loadData();
+renderAll();
+
+</script>
+</body>
+</html>
